@@ -11,8 +11,7 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-# --- CONFIGURATION APACHE STRICTE ---
-# On crée un fichier de configuration propre pour Apache
+# Configuration Apache
 RUN echo '<VirtualHost *:${PORT:-8080}>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
@@ -27,8 +26,9 @@ RUN echo "Listen ${PORT:-8080}" > /etc/apache2/ports.conf
 
 RUN a2enmod rewrite
 
+# Permissions finales
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+    chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8080
 CMD ["apache2-foreground"]
