@@ -3,13 +3,7 @@ FROM php:8.4-apache AS production
 
 # Installation des dépendances système
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    git \
-    curl \
+    libpng-dev libonig-dev libxml2-dev zip unzip git curl \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Installation de Composer
@@ -24,9 +18,8 @@ COPY . .
 # Installation des dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Correction spécifique pour Render : 
-# On modifie les fichiers de config pour utiliser $PORT au lieu de 80
-RUN sed -i 's/Listen 80/Listen ${PORT:-8080}/g' /etc/apache2/ports.conf && \
+# FIX pour Render : On remplace le port 80 par la variable d'environnement $PORT attendue
+RUN echo "Listen ${PORT:-8080}" > /etc/apache2/ports.conf && \
     sed -i 's/:80/:${PORT:-8080}/g' /etc/apache2/sites-available/000-default.conf
 
 # Permissions
