@@ -18,9 +18,12 @@ COPY . .
 # Installation des dépendances
 RUN composer install --no-dev --optimize-autoloader
 
-# Fix des permissions (très important pour Render)
+# Fix des permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exposition du port (Render utilise 10000 par défaut, mais 80 est standard pour le conteneur)
+# Exposition du port
 EXPOSE 80
+
+# Lancement des migrations puis du serveur Apache
+CMD php artisan migrate --force && apache2-foreground
