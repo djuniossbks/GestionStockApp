@@ -13,7 +13,8 @@ COPY resources ./resources
 COPY vite.config.js ./
 RUN npm run build
 
-FROM php:8.3-apache AS production
+# Remplace 8.3 par 8.4 ici
+FROM php:8.4-apache AS production
 
 ENV APP_ENV=production \
     APP_DEBUG=false \
