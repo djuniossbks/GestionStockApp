@@ -34,6 +34,8 @@ RUN apt-get update \
     && a2enmod rewrite headers \
     && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
+    && sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf \
+    && sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/*.conf \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
@@ -47,7 +49,7 @@ RUN chmod +x /usr/local/bin/laravel-entrypoint \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 ENTRYPOINT ["laravel-entrypoint"]
 CMD ["apache2-foreground"]
