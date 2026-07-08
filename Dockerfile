@@ -18,10 +18,10 @@ COPY . .
 # Installation des dépendances
 RUN composer install --no-dev --optimize-autoloader
 
-# Création du script de démarrage
-# On lance la migration, puis on force les permissions sur les dossiers critiques, enfin on lance Apache
+# Création du script de démarrage (Mis à jour avec le seeder !)
 RUN echo '#!/bin/bash\n\
 php artisan migrate --force\n\
+php artisan db:seed --force\n\
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache\n\
 apache2-foreground' > /usr/local/bin/start.sh \
