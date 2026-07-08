@@ -1,0 +1,22 @@
+@extends('layouts.app')
+
+@section('title', 'Inventaire')
+
+@section('content')
+<section class="panel">
+    <div class="panel-header"><h2>Stocks par produit et depot</h2></div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Produit</th><th>Categorie</th><th>Depot</th><th>Adresse</th><th>Quantite</th></tr></thead>
+            <tbody>
+            @forelse($stocks as $stock)
+                <tr><td>{{ $stock->produit->nom }}</td><td>{{ $stock->produit->categorie }}</td><td>{{ $stock->depot->nom }}</td><td>{{ $stock->depot->adresse }}</td><td><span class="badge text-bg-light">{{ $stock->quantite }}</span></td></tr>
+            @empty
+                <tr><td colspan="5" class="text-center text-muted">Aucun stock.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    {{ $stocks->links() }}
+</section>
+@endsection

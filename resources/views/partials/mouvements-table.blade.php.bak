@@ -1,0 +1,22 @@
+<section class="panel">
+    <div class="panel-header"><h2>Historique des {{ $type }}</h2></div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Date</th><th>Produit</th><th>Depot</th><th>Quantite</th><th>Utilisateur</th></tr></thead>
+            <tbody>
+            @forelse($items as $item)
+                <tr>
+                    <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                    <td><i class="fa-solid fa-heart" style="color: var(--pink-500); margin-right:8px; font-size:0.8rem;"></i>{{ $item->produit->nom }}</td>
+                    <td>{{ $item->depot->nom }}</td>
+                    <td>{{ $item->quantite }}</td>
+                    <td>{{ $item->utilisateur->name }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="5" class="text-center text-muted">Aucun mouvement.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    {{ $items->links() }}
+</section>

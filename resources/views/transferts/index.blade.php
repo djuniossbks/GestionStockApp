@@ -1,0 +1,35 @@
+@extends('layouts.app')
+
+@section('title', 'Transfert')
+
+@section('content')
+<section class="panel mb-4">
+    <div class="panel-header"><h2>Nouveau transfert <i class="fa-solid fa-heart" style="color: var(--pink-500); margin-left:8px; font-size:0.9rem;"></i> <i class="fa-solid fa-heart" style="color: var(--pink-500); margin-left:8px; font-size:0.9rem;"></i></h2></div>
+    <form method="POST" action="{{ route('transferts.store') }}" class="row g-3">
+        @csrf
+        <div class="col-lg-3"><label class="form-label">Produit</label><select name="produit_id" class="form-select" required>@foreach($produits as $produit)<option value="{{ $produit->id }}">{{ $produit->nom }}</option>@endforeach</select></div>
+        <div class="col-lg-3"><label class="form-label">Depot depart</label><select name="depot_depart" class="form-select" required>@foreach($depots as $depot)<option value="{{ $depot->id }}">{{ $depot->nom }}</option>@endforeach</select></div>
+        <div class="col-lg-3"><label class="form-label">Depot destination</label><select name="depot_destination" class="form-select" required>@foreach($depots as $depot)<option value="{{ $depot->id }}">{{ $depot->nom }}</option>@endforeach</select></div>
+        <div class="col-lg-1"><label class="form-label">Qt</label><input name="quantite" type="number" min="1" class="form-control" required></div>
+        <div class="col-lg-2 d-flex align-items-end"><button class="btn btn-primary w-100" type="submit"><i class="fa-solid fa-right-left"></i> Transferer <i class="fa-solid fa-heart" style="margin-left:6px;color:#fff;opacity:.95"></i></button></div>
+    </form>
+</section>
+<section class="panel">
+    <div class="panel-header"><h2>Transferts <i class="fa-solid fa-heart" style="color: var(--pink-500); margin-left:8px; font-size:0.9rem;"></i></h2></div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Date</th><th>Produit</th><th>Depart</th><th>Destination</th><th>Quantite</th><th>Statut</th><th>Utilisateur</th></tr></thead>
+            <tbody>
+            @forelse($transferts as $transfert)
+                <tr>
+                    <td>{{ $transfert->created_at->format('d/m/Y H:i') }}</td><td>{{ $transfert->produit->nom }}</td><td>{{ $transfert->depart->nom }}</td><td>{{ $transfert->destination->nom }}</td><td>{{ $transfert->quantite }}</td><td><span class="badge text-bg-success">{{ $transfert->statut }}</span></td><td>{{ $transfert->utilisateur->name }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="7" class="text-center text-muted">Aucun transfert.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    {{ $transferts->links() }}
+</section>
+@endsection

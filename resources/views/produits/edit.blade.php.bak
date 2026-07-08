@@ -1,0 +1,13 @@
+@extends('layouts.app')
+
+@section('title', 'Modifier un produit')
+
+@section('content')
+<section class="panel">
+    <div class="panel-header"><h2>{{ $produit->nom }} <i class="fa-solid fa-heart" style="color: var(--pink-500); margin-left:8px; font-size:0.9rem;"></i></h2></div>
+    <form method="POST" action="{{ route('produits.update', $produit) }}">
+        @method('PUT')
+        @include('produits._form', ['produit' => $produit])
+    </form>
+</section>
+@endsection
