@@ -1,37 +1,34 @@
-# Utilisation de PHP 8.4 avec Apache
 FROM php:8.4-apache AS production
 
-# Installation des dépendances système
 RUN apt-get update && apt-get install -y \
     libpng-dev libonig-dev libxml2-dev zip unzip git curl \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Définition du répertoire de travail
 WORKDIR /var/www/html
-
-# Copie des fichiers
 COPY . .
 
-# Installation des dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# FIX pour Render : Configuration dynamique du port
-RUN echo "Listen ${PORT:-8080}" > /etc/apache2/ports.conf && \
-    sed -i 's/:80/:${PORT:-8080}/g' /etc/apache2/sites-available/000-default.conf
+# --- CONFIGURATION APACHE STRICTE ---
+# On crée un fichier de configuration propre pour Apache
+RUN echo '<VirtualHost *:${PORT:-8080}>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Pointer la racine Apache vers le dossier public de Laravel
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf && \
-    a2enmod rewrite
+RUN echo "Listen ${PORT:-8080}" > /etc/apache2/ports.conf
 
-# Fix des permissions pour Apache
+RUN a2enmod rewrite
+
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Exposition du port
 EXPOSE 8080
-
-# Commande de lancement
 CMD ["apache2-foreground"]
